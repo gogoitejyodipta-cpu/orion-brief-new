@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ORION Brief — Create Account</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#04070b;color:#8aaec4;font-family:'IBM Plex Mono',monospace;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px 0}
+body::after{content:'';position:fixed;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.04) 2px,rgba(0,0,0,.04) 3px)}
+.wrap{width:100%;max-width:480px;padding:20px}
+.brand{text-align:center;margin-bottom:32px}
+.brand-name{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:8px;color:#e8f2f8}
+.brand-tag{display:inline-block;font-size:7px;letter-spacing:2px;padding:2px 8px;border:1px solid rgba(59,130,246,.3);color:#3b82f6;background:rgba(37,99,235,.08);margin-top:3px}
+.card{background:#070d12;border:1px solid #1a2e3e;padding:32px}
+.card-title{font-size:9px;letter-spacing:2px;color:#3d5f78;margin-bottom:24px;padding-bottom:12px;border-bottom:1px solid #1a2e3e}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:7.5px;letter-spacing:1.5px;color:#3d5f78;margin-bottom:6px}
+.field input{width:100%;background:#04070b;border:1px solid #1a2e3e;color:#e8f2f8;font-family:'IBM Plex Mono',monospace;font-size:10px;padding:10px 14px;outline:none;transition:border-color .15s}
+.field input:focus{border-color:#3b82f6}
+.field input::placeholder{color:#2a4458}
+.profile-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-top:6px}
+.profile-option{position:relative}
+.profile-option input{position:absolute;opacity:0;width:0;height:0}
+.profile-card{border:1px solid #1a2e3e;padding:10px 12px;cursor:pointer;transition:all .15s;background:#04070b;display:flex;align-items:center;gap:8px}
+.profile-card:hover{border-color:#3b82f6;background:rgba(37,99,235,.04)}
+.profile-option input:checked + .profile-card{border-color:#3b82f6;background:rgba(37,99,235,.08)}
+.p-icon{font-size:14px;flex-shrink:0}
+.p-name{font-size:7.5px;letter-spacing:.5px;color:#b8d0e0;line-height:1.3}
+.p-desc{font-size:6.5px;color:#3d5f78;margin-top:2px}
+.btn{width:100%;padding:12px;background:#1d4ed8;border:none;color:#e8f2f8;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;cursor:pointer;transition:background .15s;margin-top:8px}
+.btn:hover{background:#2563eb}
+.error{background:rgba(220,38,38,.08);border:1px solid rgba(239,68,68,.25);color:#ef4444;font-size:8px;letter-spacing:.5px;padding:10px 14px;margin-bottom:16px}
+.link-row{text-align:center;margin-top:20px;font-size:8px;color:#3d5f78}
+.link-row a{color:#3b82f6;text-decoration:none}
+.field-hint{font-size:7px;color:#2a4458;margin-top:4px;letter-spacing:.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">
+    <div class="brand-name">ORION <span style="font-size:20px;letter-spacing:3px">BRIEF</span></div>
+    <div class="brand-tag">CREATE ANALYST ACCOUNT</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">ACCOUNT SETUP</div>
+    {% if error %}
+    <div class="error">{{ error }}</div>
+    {% endif %}
+    <form method="POST">
+      <div class="field">
+        <label>FULL NAME</label>
+        <input type="text" name="name" placeholder="Arjun Sharma" required>
+      </div>
+      <div class="field">
+        <label>WORK EMAIL</label>
+        <input type="email" name="email" placeholder="analyst@consultancy.com" required>
+        <div class="field-hint">Morning briefs will be delivered to this address</div>
+      </div>
+      <div class="field">
+        <label>PASSWORD</label>
+        <input type="password" name="password" placeholder="Min. 8 characters" required minlength="8">
+      </div>
+      <div class="field">
+        <label>SELECT YOUR CLIENT PROFILE</label>
+        <div class="field-hint" style="margin-bottom:8px">Your morning brief and alerts are tuned to your sector</div>
+        <div class="profile-grid">
+          {% for key, p in profiles.items() %}
+          <label class="profile-option">
+            <input type="radio" name="profile" value="{{ key }}" {% if key == 'maritime' %}checked{% endif %}>
+            <div class="profile-card">
+              <span class="p-icon">{{ p.icon }}</span>
+              <div>
+                <div class="p-name">{{ p.label }}</div>
+              </div>
+            </div>
+          </label>
+          {% endfor %}
+        </div>
+      </div>
+      <button type="submit" class="btn">CREATE ACCOUNT & ACCESS ORION →</button>
+    </form>
+  </div>
+
+  <div class="link-row">
+    Already have an account? <a href="/login">Sign in</a>
+  </div>
+</div>
+</body>
+</html>

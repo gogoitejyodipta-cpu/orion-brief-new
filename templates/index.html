@@ -1,0 +1,1723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ORION Brief — {{ profile.label }}</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;1,300&family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400&family=Barlow+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:    #020508;
+  --ink1:   #05090e;
+  --ink2:   #080e15;
+  --ink3:   #0c141d;
+  --ink4:   #101c27;
+  --wire:   #152130;
+  --wire2:  #1c2e40;
+  --dim:    #253d52;
+  --muted:  #385870;
+  --steel:  #507088;
+  --silver: #7a9cb5;
+  --ghost:  #a8c4d8;
+  --cloud:  #c8dce8;
+  --white:  #e4f0f8;
+  --blue:   #1d56c8;
+  --bluel:  #3676e8;
+  --blued:  #1240a0;
+  --red:    #c02020;
+  --redl:   #e84040;
+  --amber:  #c07010;
+  --amberl: #e8a020;
+  --green:  #0e8a3a;
+  --greenl: #18c858;
+  --cyan:   #0878a8;
+  --cyanl:  #18b8e0;
+  --purple: #6030b0;
+  --purpl:  #8850d8;
+  --orange: #c05010;
+  --orangel:#e87020;
+  --pc:     {{ profile.color }};
+}
+html{scroll-behavior:smooth;height:100%}
+body{background:var(--ink);color:var(--silver);font-family:'JetBrains Mono',monospace;min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;font-size:13px}
+
+/* — CRT scanlines — */
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.06) 2px,rgba(0,0,0,.06) 3px)}
+
+/* — Scrollbar — */
+::-webkit-scrollbar{width:3px;height:3px}
+::-webkit-scrollbar-track{background:var(--ink)}
+::-webkit-scrollbar-thumb{background:var(--wire2);border-radius:1px}
+
+/* ═══════════════════════════════════════════════
+   TOPBAR
+══════════════════════════════════════════════ */
+#topbar{
+  position:fixed;top:0;left:0;right:0;z-index:500;
+  height:52px;background:rgba(2,5,8,.98);
+  border-bottom:1px solid var(--wire2);
+  display:flex;align-items:stretch;
+  backdrop-filter:blur(16px);
+}
+/* Threat-level accent strip across the very top */
+#topbar::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:var(--threat-color,var(--bluel));
+  transition:background .5s;
+}
+
+.tb-brand{
+  display:flex;align-items:center;gap:12px;
+  padding:0 24px 0 20px;
+  border-right:1px solid var(--wire2);
+  flex-shrink:0;
+}
+.tb-logo-mark{width:28px;height:28px;flex-shrink:0}
+.tb-wordmark{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:24px;letter-spacing:5px;color:var(--white);line-height:1;
+}
+.tb-brief-tag{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:10px;font-weight:600;letter-spacing:3px;
+  color:var(--bluel);padding:2px 7px;
+  border:1px solid rgba(54,118,232,.3);
+  background:rgba(29,86,200,.08);
+  align-self:center;
+}
+
+.tb-status-cluster{
+  display:flex;align-items:center;gap:0;
+  padding:0 0 0 0;flex-shrink:0;
+}
+.tb-seg{
+  display:flex;align-items:center;gap:8px;
+  padding:0 18px;
+  border-right:1px solid var(--wire2);
+  height:100%;font-size:10px;
+}
+.tb-seg-label{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:9px;font-weight:500;letter-spacing:2px;
+  color:var(--muted);text-transform:uppercase;
+}
+
+.live-dot{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--greenl);
+  box-shadow:0 0 8px var(--greenl);
+  animation:livepulse 2.5s infinite;
+  flex-shrink:0;
+}
+@keyframes livepulse{0%,100%{opacity:1;box-shadow:0 0 8px var(--greenl)}50%{opacity:.4;box-shadow:0 0 3px var(--greenl)}}
+
+.tb-profile-pill{
+  display:flex;align-items:center;gap:8px;
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:13px;font-weight:600;letter-spacing:2px;
+  color:var(--pc);
+}
+.tb-profile-icon{font-size:14px}
+
+.tb-threat-block{
+  display:flex;align-items:center;gap:10px;
+  padding:0 20px;border-right:1px solid var(--wire2);
+}
+.tb-threat-num{
+  font-family:'Bebas Neue',sans-serif;font-size:28px;line-height:1;
+  color:var(--threat-color,var(--amberl));
+  transition:color .5s;
+}
+.tb-threat-meta{display:flex;flex-direction:column;gap:2px}
+.tb-threat-lbl{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:8px;font-weight:600;letter-spacing:2px;color:var(--muted);
+}
+.tb-threat-lvl{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:11px;font-weight:700;letter-spacing:1.5px;
+  color:var(--threat-color,var(--amberl));transition:color .5s;
+}
+
+.tb-time-block{
+  display:flex;flex-direction:column;justify-content:center;gap:3px;
+  padding:0 18px;border-right:1px solid var(--wire2);
+}
+.tb-clock{font-size:12px;color:var(--ghost);letter-spacing:1px;font-variant-numeric:tabular-nums}
+.tb-utc{font-size:9px;color:var(--muted);letter-spacing:1px}
+
+.tb-right{margin-left:auto;display:flex;align-items:stretch}
+.tb-icon-btn{
+  width:48px;height:52px;background:transparent;
+  border:none;border-left:1px solid var(--wire2);
+  color:var(--steel);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;transition:all .12s;position:relative;
+}
+.tb-icon-btn:hover{background:var(--wire);color:var(--white)}
+.tb-icon-btn.active{color:var(--bluel);background:rgba(29,86,200,.1)}
+.tb-badge{
+  position:absolute;top:10px;right:10px;
+  width:7px;height:7px;border-radius:50%;
+  background:var(--redl);border:1px solid var(--ink);
+}
+.tb-plan-chip{
+  display:flex;align-items:center;
+  padding:0 14px;border-left:1px solid var(--wire2);
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:10px;font-weight:700;letter-spacing:2px;
+}
+.tb-admin-link{
+  display:flex;align-items:center;padding:0 16px;
+  border-left:1px solid var(--wire2);
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:10px;font-weight:700;letter-spacing:2px;
+  color:var(--redl);text-decoration:none;
+  transition:background .12s;
+}
+.tb-admin-link:hover{background:rgba(232,64,64,.08)}
+
+/* ═══════════════════════════════════════════════
+   PROFILE TAB STRIP
+══════════════════════════════════════════════ */
+#profile-strip{
+  position:fixed;top:52px;left:0;right:0;z-index:400;
+  height:42px;background:rgba(2,5,8,.97);
+  border-bottom:1px solid var(--wire2);
+  display:flex;align-items:stretch;
+  overflow-x:auto;scrollbar-width:none;
+}
+#profile-strip::-webkit-scrollbar{display:none}
+
+.p-tab{
+  display:flex;align-items:center;gap:7px;
+  padding:0 18px;
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:12px;font-weight:600;letter-spacing:1.5px;
+  color:var(--muted);cursor:pointer;
+  border:none;background:transparent;
+  border-bottom:2px solid transparent;
+  white-space:nowrap;transition:all .15s;
+  text-transform:uppercase;
+}
+.p-tab:hover{color:var(--ghost)}
+.p-tab.active{color:var(--white);border-bottom-color:var(--pc)}
+.p-tab-icon{font-size:13px}
+
+/* ═══════════════════════════════════════════════
+   MAIN GRID LAYOUT
+══════════════════════════════════════════════ */
+#shell{
+  padding-top:94px;
+  display:grid;
+  grid-template-columns:220px 1fr 264px;
+  grid-template-rows:auto;
+  min-height:100vh;
+  gap:0;
+}
+
+/* ═══════════════════════════════════════════════
+   LEFT SIDEBAR — CHOKEPOINTS / DOMAIN STATUS
+══════════════════════════════════════════════ */
+#sidebar-left{
+  border-right:1px solid var(--wire2);
+  display:flex;flex-direction:column;
+  position:sticky;top:94px;height:calc(100vh - 94px);
+  overflow-y:auto;
+}
+
+.sl-section-head{
+  padding:14px 16px 10px;
+  border-bottom:1px solid var(--wire2);
+  flex-shrink:0;
+}
+.sl-section-label{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:9px;font-weight:700;letter-spacing:3px;
+  color:var(--muted);text-transform:uppercase;
+}
+
+/* Chokepoint items */
+.choke-list{display:flex;flex-direction:column;border-bottom:1px solid var(--wire2)}
+.choke-item{
+  padding:12px 16px;border-bottom:1px solid rgba(21,33,48,.6);
+  cursor:default;transition:background .12s;
+}
+.choke-item:hover{background:var(--wire)}
+.choke-item:last-child{border-bottom:none}
+.choke-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px}
+.choke-name{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:12px;font-weight:600;letter-spacing:1px;
+  color:var(--ghost);
+}
+.choke-status-pill{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:8px;font-weight:700;letter-spacing:1.5px;
+  padding:1px 7px;border:1px solid;
+}
+.choke-desc{font-size:9px;color:var(--muted);line-height:1.5;margin-bottom:6px}
+.choke-bar{height:2px;background:var(--wire2);border-radius:1px;overflow:hidden}
+.choke-fill{height:100%;border-radius:1px;transition:width .8s ease}
+
+/* Domain sectors */
+.domain-grid{
+  display:flex;flex-direction:column;
+  border-bottom:1px solid var(--wire2);
+}
+.domain-row{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 16px;border-bottom:1px solid rgba(21,33,48,.6);
+  transition:background .12s;
+}
+.domain-row:last-child{border-bottom:none}
+.domain-row:hover{background:var(--wire)}
+.domain-icon{font-size:13px;flex-shrink:0;width:20px;text-align:center}
+.domain-info{flex:1;min-width:0}
+.domain-name{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:11px;font-weight:600;letter-spacing:.5px;
+  color:var(--ghost);margin-bottom:2px;
+}
+.domain-focus{font-size:8.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.domain-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+/* Sidebar sources */
+.src-list{padding:12px 16px;display:flex;flex-direction:column;gap:7px}
+.src-row{display:flex;align-items:center;gap:8px}
+.src-indicator{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.src-name{font-size:9px;color:var(--muted);flex:1}
+.src-status{font-size:8px;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;font-weight:600}
+
+/* ═══════════════════════════════════════════════
+   MAIN CONTENT
+══════════════════════════════════════════════ */
+#main-content{
+  padding:0;min-width:0;
+  display:flex;flex-direction:column;
+}
+
+/* Section headers */
+.sec-bar{
+  display:flex;align-items:center;gap:12px;
+  padding:18px 24px 14px;
+  border-bottom:1px solid var(--wire2);
+  background:var(--ink);
+}
+.sec-eyebrow{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:9px;font-weight:700;letter-spacing:3px;
+  color:var(--muted);text-transform:uppercase;
+}
+.sec-title{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:18px;font-weight:700;letter-spacing:2px;
+  color:var(--white);text-transform:uppercase;
+}
+.sec-badge{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:9px;font-weight:700;letter-spacing:2px;
+  padding:3px 10px;border:1px solid;
+}
+.badge-critical{color:var(--redl);border-color:rgba(232,64,64,.35);background:rgba(192,32,32,.08)}
+.badge-high{color:var(--amberl);border-color:rgba(232,160,32,.35);background:rgba(192,112,16,.08)}
+.badge-elevated{color:var(--bluel);border-color:rgba(54,118,232,.35);background:rgba(29,86,200,.08)}
+.badge-nominal{color:var(--greenl);border-color:rgba(24,200,88,.35);background:rgba(14,138,58,.08)}
+.sec-refresh{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:10px;font-weight:600;letter-spacing:1.5px;
+  padding:5px 14px;background:transparent;
+  border:1px solid var(--wire2);color:var(--steel);
+  cursor:pointer;transition:all .15s;text-transform:uppercase;
+}
+.sec-refresh:hover{border-color:var(--bluel);color:var(--bluel)}
+.sec-refresh:disabled{opacity:.35;cursor:not-allowed}
+.profile-label-badge{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:10px;font-weight:600;letter-spacing:1.5px;
+  padding:3px 10px;border:1px solid var(--pc);
+  color:var(--pc);background:rgba(0,0,0,.2);
+}
+
+/* ── BRIEF SECTION ─────────────────────────── */
+#brief-section{border-bottom:1px solid var(--wire2)}
+
+/* Topics bar */
+.topics-bar{
+  display:grid;grid-template-columns:repeat(5,1fr);
+  background:var(--ink1);border-bottom:1px solid var(--wire2);
+}
+.topic-cell{
+  padding:10px 14px;
+  border-right:1px solid var(--wire2);
+  display:flex;flex-direction:column;gap:4px;
+}
+.topic-cell:last-child{border-right:none}
+.topic-cell-icon{font-size:10px;opacity:.7}
+.topic-name{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:8.5px;font-weight:600;letter-spacing:1.5px;
+  color:var(--muted);text-transform:uppercase;
+}
+.topic-status{font-size:9px;color:var(--pc);font-family:'Barlow Condensed',sans-serif;font-weight:600;letter-spacing:.5px}
+
+/* Document header (classified style) */
+.brief-doc-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 24px;background:var(--ink2);border-bottom:1px solid var(--wire2);
+}
+.brief-classification{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:9px;font-weight:700;letter-spacing:3px;
+  color:var(--muted);text-transform:uppercase;
+}
+.brief-doc-meta{
+  display:flex;gap:20px;font-size:9px;color:var(--muted);
+  font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;font-weight:500;
+}
+.brief-doc-meta span{display:flex;align-items:center;gap:5px}
+.brief-doc-meta strong{color:var(--ghost)}
+
+/* Brief body */
+.brief-body{
+  padding:28px 28px 20px;position:relative;min-height:140px;
+  background:var(--ink1);
+}
+/* Left accent */
+.brief-body::before{
+  content:'';position:absolute;top:0;left:0;bottom:0;
+  width:3px;background:var(--pc);
+}
+.brief-text{
+  font-family:'Crimson Pro',serif;
+  font-size:15.5px;line-height:1.9;
+  color:var(--cloud);font-style:italic;
+  padding-left:4px;
+}
+.brief-text.loading{
+  font-family:'JetBrains Mono',monospace;
+  font-size:9.5px;font-style:normal;
+  color:var(--muted);letter-spacing:.5px;line-height:1.8;
+}
+
+/* Brief footer */
+.brief-footer{
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  padding:12px 24px 14px;background:var(--ink2);
+  border-top:1px solid var(--wire2);
+}
+.brief-ts{font-size:9px;color:var(--muted);letter-spacing:.5px;font-family:'Barlow Condensed',sans-serif}
+.brief-wl-pill{
+  display:none;
+  font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;letter-spacing:1.5px;
+  padding:2px 10px;border:1px solid rgba(24,200,88,.3);color:var(--greenl);background:rgba(14,138,58,.07);
+}
+.brief-copy-btn{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:10px;font-weight:600;letter-spacing:1.5px;
+  padding:5px 14px;background:transparent;
+  border:1px solid var(--wire2);color:var(--steel);
+  cursor:pointer;transition:all .15s;
+}
+.brief-copy-btn:hover{border-color:var(--bluel);color:var(--bluel)}
+.brief-copy-btn.copied{border-color:var(--greenl);color:var(--greenl)}
+.next-refresh-lbl{
+  margin-left:auto;font-size:9px;color:var(--dim);
+  font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;
+}
+
+/* ── ALERT STRIP ────────────────────────── */
+#alerts-section{border-bottom:1px solid var(--wire2)}
+.alert-feed{display:flex;flex-direction:column;gap:0}
+
+.alert-card{
+  display:grid;grid-template-columns:3px 56px 1fr auto;
+  align-items:stretch;background:var(--ink1);
+  border-bottom:1px solid var(--wire2);
+  transition:background .12s;
+  animation:fadeUp .35s ease both;
+}
+.alert-card:hover{background:var(--ink2)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+.alert-sev-stripe{flex-shrink:0;transition:background .3s}
+.alert-rank-col{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:14px 6px;border-right:1px solid var(--wire2);gap:5px;
+}
+.alert-num{
+  font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--dim);line-height:1;
+}
+.alert-conf{
+  font-family:'Barlow Condensed',sans-serif;font-size:7.5px;font-weight:700;letter-spacing:1px;
+}
+
+.alert-body{padding:14px 18px;display:flex;flex-direction:column;gap:5px;min-width:0}
+.alert-event{
+  font-size:11px;font-weight:600;color:var(--white);
+  line-height:1.4;letter-spacing:.2px;
+}
+.alert-where{
+  font-size:9px;color:var(--muted);letter-spacing:.5px;
+  display:flex;align-items:center;gap:6px;
+  font-family:'Barlow Condensed',sans-serif;font-weight:500;
+}
+.alert-where::before{content:'◈';color:var(--dim)}
+.alert-india{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:10px;font-weight:600;color:var(--amberl);
+  display:flex;align-items:flex-start;gap:6px;line-height:1.4;
+}
+.alert-india::before{
+  content:'▶ IN:';font-size:8px;letter-spacing:1px;
+  color:var(--amber);opacity:.8;flex-shrink:0;margin-top:1px;
+}
+.translated-tag{
+  font-size:7.5px;padding:1px 6px;letter-spacing:1px;font-weight:700;
+  background:rgba(8,120,168,.08);border:1px solid rgba(24,184,224,.2);color:var(--cyanl);
+  font-family:'Barlow Condensed',sans-serif;
+  display:inline-block;
+}
+
+.alert-meta-col{
+  padding:14px 16px 14px 12px;display:flex;flex-direction:column;
+  align-items:flex-end;justify-content:center;gap:5px;
+  border-left:1px solid var(--wire2);flex-shrink:0;
+}
+.alert-src{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:9px;font-weight:600;letter-spacing:1.5px;color:var(--muted);
+}
+.alert-score{
+  font-family:'Bebas Neue',sans-serif;font-size:22px;line-height:1;
+  transition:color .3s;
+}
+.alert-time-ago{font-size:8px;color:var(--dim);font-family:'Barlow Condensed',sans-serif;letter-spacing:.5px}
+
+.alert-skeleton{
+  height:90px;background:var(--ink1);border-bottom:1px solid var(--wire2);
+  position:relative;overflow:hidden;
+}
+.alert-skeleton::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.025) 50%,transparent 100%);
+  animation:shimmer 1.8s ease infinite;
+}
+@keyframes shimmer{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+
+/* ── ASK SECTION ────────────────────────── */
+#ask-section{border-bottom:1px solid var(--wire2)}
+.ask-terminal{background:var(--ink1)}
+.ask-input-row{display:flex;border-bottom:1px solid var(--wire2)}
+.ask-prompt{
+  padding:15px 18px;color:var(--pc);font-size:13px;
+  display:flex;align-items:center;border-right:1px solid var(--wire2);
+  flex-shrink:0;
+}
+#ask-input{
+  flex:1;background:transparent;border:none;outline:none;
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  color:var(--white);padding:15px 18px;caret-color:var(--bluel);
+}
+#ask-input::placeholder{color:var(--dim);font-style:italic;font-size:10px}
+#ask-btn{
+  padding:0 22px;background:var(--blued);border:none;border-left:1px solid var(--wire2);
+  color:var(--white);font-family:'Barlow Condensed',sans-serif;
+  font-size:11px;font-weight:700;letter-spacing:2px;cursor:pointer;transition:background .15s;
+}
+#ask-btn:hover{background:var(--blue)}
+#ask-btn:disabled{background:var(--ink3);color:var(--muted);cursor:not-allowed}
+
+.ask-chips{display:flex;gap:5px;flex-wrap:wrap;padding:10px 18px;border-bottom:1px solid var(--wire2);background:var(--ink)}
+.suggest-chip{
+  font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:500;letter-spacing:.5px;
+  padding:4px 11px;background:var(--ink2);
+  border:1px solid var(--wire2);color:var(--steel);cursor:pointer;transition:all .12s;
+}
+.suggest-chip:hover{border-color:var(--pc);color:var(--pc)}
+
+.ask-output{min-height:90px;padding:22px 24px;position:relative}
+.ask-placeholder{font-size:10px;letter-spacing:1px;color:var(--dim);text-align:center;padding:12px 0;font-family:'Barlow Condensed',sans-serif;letter-spacing:2px}
+.ask-loading{display:none;align-items:center;gap:12px;font-size:9px;letter-spacing:2px;color:var(--muted);padding:8px 0;font-family:'Barlow Condensed',sans-serif;font-weight:600}
+.ask-loading.show{display:flex}
+.ask-spinner{width:16px;height:16px;border-radius:50%;border:1.5px solid var(--wire2);border-top-color:var(--pc);animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ask-answer-text{
+  font-family:'Crimson Pro',serif;font-size:15px;line-height:1.85;
+  color:var(--cloud);font-style:italic;display:none;
+}
+.ask-answer-text.show{display:block}
+.typing-cursor::after{content:'▌';animation:blink .9s step-end infinite;color:var(--bluel);font-size:.8em}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+.ask-history{border-top:1px solid var(--wire2);max-height:280px;overflow-y:auto;display:none}
+.history-item{padding:15px 24px;border-bottom:1px solid rgba(21,33,48,.5)}
+.history-q{font-size:9px;color:var(--bluel);margin-bottom:8px;display:flex;gap:8px;letter-spacing:.5px}
+.history-q::before{content:'▶';flex-shrink:0;margin-top:1px}
+.history-a{font-family:'Crimson Pro',serif;font-size:14px;color:var(--silver);line-height:1.75;font-style:italic}
+
+/* ═══════════════════════════════════════════════
+   RIGHT SIDEBAR — METADATA / COMMS
+══════════════════════════════════════════════ */
+#sidebar-right{
+  border-left:1px solid var(--wire2);
+  display:flex;flex-direction:column;
+  position:sticky;top:94px;height:calc(100vh - 94px);
+  overflow-y:auto;
+}
+
+.rs-block{border-bottom:1px solid var(--wire2)}
+.rs-head{
+  padding:12px 16px;border-bottom:1px solid var(--wire2);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.rs-label{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:9px;font-weight:700;letter-spacing:3px;color:var(--muted);text-transform:uppercase;
+}
+
+/* System status */
+.sys-rows{padding:4px 0}
+.sys-row{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 16px;border-bottom:1px solid rgba(21,33,48,.4);
+}
+.sys-row:last-child{border-bottom:none}
+.sys-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.sys-key{font-size:9px;color:var(--muted);flex:1;letter-spacing:.3px;font-family:'Barlow Condensed',sans-serif;font-weight:500}
+.sys-val{font-size:9px;font-family:'Barlow Condensed',sans-serif;font-weight:600;letter-spacing:.5px}
+
+/* Threat matrix */
+.threat-matrix{padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.tm-row{display:flex;align-items:center;gap:8px}
+.tm-label{font-size:9px;color:var(--muted);width:70px;font-family:'Barlow Condensed',sans-serif;font-weight:500;letter-spacing:.5px}
+.tm-bar{flex:1;height:4px;background:var(--wire2);border-radius:2px;overflow:hidden}
+.tm-fill{height:100%;border-radius:2px;transition:width 1.2s ease}
+.tm-val{font-size:9px;font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:.5px;min-width:24px;text-align:right}
+
+/* Alert rules mini */
+.rules-mini{padding:8px 0;max-height:200px;overflow-y:auto}
+.rule-mini-row{
+  display:flex;align-items:center;gap:8px;
+  padding:7px 16px;border-bottom:1px solid rgba(21,33,48,.4);
+  font-size:9px;
+}
+.rule-mini-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.rule-mini-name{flex:1;color:var(--ghost);font-family:'Barlow Condensed',sans-serif;font-weight:500;letter-spacing:.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rule-mini-count{font-size:8px;color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-weight:600}
+
+/* ═══════════════════════════════════════════════
+   SIDE PANELS (SETTINGS / ALERTS)
+══════════════════════════════════════════════ */
+.panel-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:600;opacity:0;pointer-events:none;transition:opacity .2s}
+.panel-overlay.open{opacity:1;pointer-events:all}
+.side-panel{
+  position:fixed;top:0;right:0;bottom:0;width:420px;max-width:100vw;
+  background:var(--ink1);border-left:1px solid var(--wire2);
+  z-index:601;transform:translateX(105%);transition:transform .28s cubic-bezier(.4,0,.2,1);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.side-panel.open{transform:translateX(0)}
+.panel-head{
+  padding:18px 22px;border-bottom:1px solid var(--wire2);
+  display:flex;align-items:center;gap:12px;flex-shrink:0;
+  background:var(--ink2);
+}
+.panel-title{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:13px;font-weight:700;letter-spacing:2.5px;
+  color:var(--white);flex:1;text-transform:uppercase;
+}
+.panel-close{
+  width:30px;height:30px;background:transparent;
+  border:1px solid var(--wire2);color:var(--steel);
+  cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;
+  transition:all .12s;font-family:monospace;
+}
+.panel-close:hover{border-color:var(--redl);color:var(--redl)}
+.panel-body{flex:1;overflow-y:auto;padding:22px}
+
+/* Settings form elements */
+.setting-group{margin-bottom:26px}
+.setting-label{
+  display:block;font-family:'Barlow Condensed',sans-serif;
+  font-size:9px;font-weight:700;letter-spacing:2px;
+  color:var(--muted);text-transform:uppercase;margin-bottom:9px;
+}
+.setting-input{
+  width:100%;background:var(--ink);border:1px solid var(--wire2);
+  color:var(--white);font-family:'JetBrains Mono',monospace;
+  font-size:10px;padding:10px 13px;outline:none;transition:border-color .15s;
+  resize:vertical;
+}
+.setting-input:focus{border-color:var(--bluel)}
+.profile-list{display:flex;flex-direction:column;gap:4px}
+.profile-radio{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 13px;border:1px solid var(--wire2);
+  cursor:pointer;transition:all .12s;background:var(--ink);
+}
+.profile-radio:hover{border-color:var(--wire2);background:var(--wire)}
+.profile-radio.selected{border-color:var(--bluel);background:rgba(29,86,200,.07)}
+.profile-radio input{position:absolute;opacity:0;width:0;height:0}
+.pr-icon{font-size:15px;flex-shrink:0}
+.pr-text{flex:1}
+.pr-name{font-size:9px;color:var(--white);font-family:'Barlow Condensed',sans-serif;font-weight:600;letter-spacing:.5px}
+.pr-desc{font-size:8px;color:var(--muted);margin-top:2px;font-family:'Barlow Condensed',sans-serif}
+.pr-check{font-size:10px;color:var(--bluel);opacity:0}
+.profile-radio.selected .pr-check{opacity:1}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.toggle{
+  width:38px;height:21px;background:var(--wire2);border-radius:11px;
+  cursor:pointer;position:relative;transition:background .2s;border:none;
+}
+.toggle::after{
+  content:'';position:absolute;top:3px;left:3px;
+  width:15px;height:15px;border-radius:50%;
+  background:var(--steel);transition:transform .2s;
+}
+.toggle.on{background:var(--blue)}
+.toggle.on::after{transform:translateX(17px);background:var(--white)}
+.btn-save{
+  width:100%;padding:12px;background:var(--blued);border:none;
+  color:var(--white);font-family:'Barlow Condensed',sans-serif;
+  font-size:11px;font-weight:700;letter-spacing:2.5px;cursor:pointer;
+  transition:background .15s;margin-top:10px;text-transform:uppercase;
+}
+.btn-save:hover{background:var(--blue)}
+.save-status{font-size:9px;letter-spacing:1px;color:var(--greenl);text-align:center;margin-top:8px;min-height:16px;font-family:'Barlow Condensed',sans-serif;font-weight:600}
+
+/* Watchlist tag strip */
+#wl-tag-strip{display:none;flex-wrap:wrap;gap:4px;margin-top:10px;padding-top:10px;border-top:1px solid var(--wire2)}
+#wl-live-preview{display:none;flex-wrap:wrap;gap:4px;margin-top:6px}
+
+/* Alert rules panel */
+.rules-list{display:flex;flex-direction:column;gap:5px;margin-bottom:18px}
+.rule-card{
+  background:var(--ink);border:1px solid var(--wire2);
+  padding:12px 14px;display:flex;align-items:flex-start;gap:10px;
+}
+.rule-card.inactive{opacity:.45}
+.rule-info{flex:1}
+.rule-name{font-size:9px;color:var(--white);margin-bottom:4px;font-family:'Barlow Condensed',sans-serif;font-weight:600;letter-spacing:.5px}
+.rule-condition{font-size:8.5px;color:var(--muted);font-family:'JetBrains Mono',monospace}
+.rule-condition span{color:var(--bluel)}
+.rule-meta{font-size:8px;color:var(--dim);margin-top:4px;font-family:'Barlow Condensed',sans-serif}
+.rule-actions{display:flex;gap:4px;flex-shrink:0}
+.rule-btn{
+  width:26px;height:26px;background:transparent;border:1px solid var(--wire2);
+  color:var(--steel);cursor:pointer;font-size:12px;
+  display:flex;align-items:center;justify-content:center;transition:all .12s;
+}
+.rule-btn:hover{border-color:var(--bluel);color:var(--bluel)}
+.rule-btn.del:hover{border-color:var(--redl);color:var(--redl)}
+.add-rule-form{background:var(--ink);border:1px solid var(--wire2);padding:16px}
+.add-rule-title{font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:12px;display:block;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase}
+.rule-field{margin-bottom:10px}
+.rule-field label{font-size:8px;letter-spacing:1px;color:var(--muted);display:block;margin-bottom:5px;font-family:'Barlow Condensed',sans-serif;font-weight:600;text-transform:uppercase}
+.rule-field input,.rule-field select{
+  width:100%;background:var(--ink2);border:1px solid var(--wire2);
+  color:var(--white);font-family:'JetBrains Mono',monospace;
+  font-size:9.5px;padding:9px 11px;outline:none;
+}
+.rule-field input:focus,.rule-field select:focus{border-color:var(--bluel)}
+.rule-field select option{background:var(--ink2)}
+.rule-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.btn-add-rule{
+  width:100%;padding:11px;background:rgba(29,86,200,.12);
+  border:1px solid rgba(54,118,232,.3);color:var(--bluel);
+  font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;
+  letter-spacing:2px;cursor:pointer;transition:all .15s;margin-top:8px;text-transform:uppercase;
+}
+.btn-add-rule:hover{background:rgba(29,86,200,.22)}
+.rule-status-msg{font-size:9px;letter-spacing:1px;color:var(--greenl);margin-top:6px;min-height:14px;font-family:'Barlow Condensed',sans-serif;font-weight:600}
+.preset-chips{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px}
+.preset-chip{
+  font-family:'Barlow Condensed',sans-serif;font-size:9.5px;font-weight:600;letter-spacing:.5px;
+  padding:4px 9px;background:var(--ink2);border:1px solid var(--wire2);
+  color:var(--muted);cursor:pointer;transition:all .12s;
+}
+.preset-chip:hover{border-color:var(--bluel);color:var(--bluel)}
+
+/* Alert log */
+.log-section{margin-top:20px;border-top:1px solid var(--wire2);padding-top:16px}
+.log-title{font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:10px;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase}
+.log-item{padding:10px 0;border-bottom:1px solid rgba(21,33,48,.5);display:flex;flex-direction:column;gap:3px}
+.log-rule{font-size:8.5px;color:var(--amberl);letter-spacing:.5px;font-family:'Barlow Condensed',sans-serif;font-weight:600}
+.log-event{font-size:9px;color:var(--white)}
+.log-meta{font-size:8px;color:var(--dim);display:flex;gap:12px;font-family:'Barlow Condensed',sans-serif}
+.log-email-sent{color:var(--greenl)}
+
+/* ═══════════════════════════════════════════════
+   FOOTER
+══════════════════════════════════════════════ */
+#page-footer{
+  grid-column:1/-1;
+  border-top:1px solid var(--wire2);
+  padding:12px 24px;display:flex;align-items:center;gap:16px;
+  background:var(--ink1);
+}
+.footer-brand{
+  font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:4px;color:var(--dim);
+}
+.footer-txt{font-size:9px;color:var(--muted);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px}
+.footer-sources{margin-left:auto;display:flex;gap:12px;align-items:center}
+.fsrc{font-size:8.5px;color:var(--dim);font-family:'Barlow Condensed',sans-serif;font-weight:600;letter-spacing:.5px}
+.fsrc.live{color:var(--greenl)}
+.footer-user{font-size:9px;color:var(--muted);display:flex;align-items:center;gap:10px;font-family:'Barlow Condensed',sans-serif;font-weight:500}
+.footer-logout{color:var(--muted);text-decoration:none;padding:4px 10px;border:1px solid var(--wire2);font-size:9px;font-family:'Barlow Condensed',sans-serif;font-weight:600;letter-spacing:1px;transition:all .12s}
+.footer-logout:hover{border-color:var(--redl);color:var(--redl)}
+
+/* ─── RESPONSIVE ────────────────────────── */
+@media(max-width:1100px){#shell{grid-template-columns:0 1fr 0}#sidebar-left,#sidebar-right{display:none}}
+@media(max-width:740px){
+  .topics-bar{grid-template-columns:repeat(3,1fr)}
+  .tb-time-block{display:none}
+  .alert-card{grid-template-columns:3px 40px 1fr}
+  .alert-meta-col{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ════════════════════ TOPBAR ════════════════════ -->
+<div id="topbar">
+  <div class="tb-brand">
+    <svg class="tb-logo-mark" viewBox="0 0 28 28" fill="none">
+      <polygon points="14,1 26,8 26,20 14,27 2,20 2,8"
+               fill="none" stroke="{{ profile.color }}" stroke-width="1.4"/>
+      <circle cx="14" cy="14" r="4" fill="{{ profile.color }}" opacity=".9"/>
+      <line x1="14" y1="5" x2="14" y2="11" stroke="{{ profile.color }}" stroke-width=".8" opacity=".4"/>
+      <line x1="14" y1="17" x2="14" y2="23" stroke="{{ profile.color }}" stroke-width=".8" opacity=".4"/>
+    </svg>
+    <span class="tb-wordmark">ORION</span>
+    <span class="tb-brief-tag">BRIEF</span>
+  </div>
+
+  <div class="tb-status-cluster">
+    <div class="tb-seg">
+      <div class="live-dot"></div>
+      <span class="tb-seg-label">OSINT LIVE</span>
+    </div>
+    <div class="tb-seg">
+      <div class="tb-profile-pill">
+        <span class="tb-profile-icon">{{ profile.icon }}</span>
+        <span>{{ profile.label | upper }}</span>
+      </div>
+    </div>
+    <div class="tb-threat-block">
+      <div class="tb-threat-num" id="tb-threat-val">—</div>
+      <div class="tb-threat-meta">
+        <span class="tb-threat-lbl">THREAT INDEX</span>
+        <span class="tb-threat-lvl" id="tb-threat-lvl">LOADING</span>
+      </div>
+    </div>
+    <div class="tb-time-block">
+      <span class="tb-clock" id="tb-ist">—:—:— IST</span>
+      <span class="tb-utc" id="tb-utc">—:—:— UTC</span>
+    </div>
+  </div>
+
+  <div class="tb-right">
+    {% if sub %}
+    <span class="tb-plan-chip" style="
+      {% if sub.plan == 'full' %}color:#e84040;border-left:1px solid var(--wire2)
+      {% elif sub.plan == 'standard' %}color:#e8a020;border-left:1px solid var(--wire2)
+      {% else %}color:#3676e8;border-left:1px solid var(--wire2){% endif %}">{{ sub.plan | upper }}</span>
+    {% endif %}
+    {% if user.email == admin_email %}
+    <a href="/admin" class="tb-admin-link">ADMIN</a>
+    {% endif %}
+    <button class="tb-icon-btn" onclick="openPanel('settings')" title="Settings">⚙</button>
+    <button class="tb-icon-btn" id="alerts-icon-btn" onclick="openPanel('alerts')" title="Alert Rules">🔔</button>
+  </div>
+</div>
+
+<!-- ════════════════════ PROFILE STRIP ════════════════════ -->
+<div id="profile-strip">
+  {% for key, p in profiles.items() %}
+  <button class="p-tab {% if key == profile_key %}active{% endif %}"
+          data-profile="{{ key }}" onclick="switchProfile('{{ key }}')">
+    <span class="p-tab-icon">{{ p.icon }}</span>
+    {{ p.label }}
+  </button>
+  {% endfor %}
+</div>
+
+<!-- ════════════════════ MAIN SHELL ════════════════════ -->
+<div id="shell">
+
+<!-- ── LEFT SIDEBAR ── -->
+<div id="sidebar-left">
+
+  <div class="sl-section-head">
+    <div class="sl-section-label">Monitored Chokepoints</div>
+  </div>
+  <div class="choke-list" id="choke-list">
+    <div class="choke-item">
+      <div class="choke-top">
+        <span class="choke-name">Red Sea / Bab-el-Mandeb</span>
+        <span class="choke-status-pill badge-critical" id="cs-redsea">CRITICAL</span>
+      </div>
+      <div class="choke-desc">Houthi anti-ship ops · India-Europe freight</div>
+      <div class="choke-bar"><div class="choke-fill" style="width:88%;background:var(--redl)"></div></div>
+    </div>
+    <div class="choke-item">
+      <div class="choke-top">
+        <span class="choke-name">Strait of Hormuz</span>
+        <span class="choke-status-pill badge-elevated" id="cs-hormuz">ELEVATED</span>
+      </div>
+      <div class="choke-desc">80% India crude · IRGC posture</div>
+      <div class="choke-bar"><div class="choke-fill" style="width:62%;background:var(--amberl)"></div></div>
+    </div>
+    <div class="choke-item">
+      <div class="choke-top">
+        <span class="choke-name">LoC / Pakistan Border</span>
+        <span class="choke-status-pill badge-high" id="cs-loc">HIGH</span>
+      </div>
+      <div class="choke-desc">T1 border threat · Poonch-Rajouri sector</div>
+      <div class="choke-bar"><div class="choke-fill" style="width:74%;background:var(--redl)"></div></div>
+    </div>
+    <div class="choke-item">
+      <div class="choke-top">
+        <span class="choke-name">LAC / China Border</span>
+        <span class="choke-status-pill badge-elevated" id="cs-lac">ELEVATED</span>
+      </div>
+      <div class="choke-desc">PLA posture · Ladakh, Arunachal</div>
+      <div class="choke-bar"><div class="choke-fill" style="width:55%;background:var(--amberl)"></div></div>
+    </div>
+    <div class="choke-item">
+      <div class="choke-top">
+        <span class="choke-name">Indian Ocean (IOR)</span>
+        <span class="choke-status-pill badge-elevated" id="cs-ior">ELEVATED</span>
+      </div>
+      <div class="choke-desc">PLAN presence · String of Pearls</div>
+      <div class="choke-bar"><div class="choke-fill" style="width:48%;background:var(--bluel)"></div></div>
+    </div>
+    <div class="choke-item">
+      <div class="choke-top">
+        <span class="choke-name">Malacca Strait</span>
+        <span class="choke-status-pill badge-nominal" id="cs-malacca">NOMINAL</span>
+      </div>
+      <div class="choke-desc">South-east Asia throughput · Stable</div>
+      <div class="choke-bar"><div class="choke-fill" style="width:22%;background:var(--greenl)"></div></div>
+    </div>
+  </div>
+
+  <div class="sl-section-head" style="margin-top:4px">
+    <div class="sl-section-label">Intelligence Domains</div>
+  </div>
+  <div class="domain-grid">
+    {% for key, p in profiles.items() %}
+    <div class="domain-row" onclick="switchProfile('{{ key }}')" style="cursor:pointer"
+         title="{{ p.label }}">
+      <span class="domain-icon">{{ p.icon }}</span>
+      <div class="domain-info">
+        <div class="domain-name">{{ p.label }}</div>
+        <div class="domain-focus">{{ p.topics[0] }}</div>
+      </div>
+      <span class="domain-dot {% if key == profile_key %}live-dot{% endif %}"
+            style="background:{{ p.color }};{% if key != profile_key %}box-shadow:none{% endif %}"></span>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="sl-section-head" style="margin-top:4px">
+    <div class="sl-section-label">Data Sources</div>
+  </div>
+  <div class="src-list">
+    <div class="src-row"><div class="src-indicator" style="background:var(--greenl)"></div><span class="src-name">USGS Seismic</span><span class="src-status" style="color:var(--greenl)">LIVE</span></div>
+    <div class="src-row"><div class="src-indicator" style="background:var(--greenl)"></div><span class="src-name">GDELT News</span><span class="src-status" style="color:var(--greenl)">LIVE</span></div>
+    <div class="src-row"><div class="src-indicator" style="background:var(--greenl)"></div><span class="src-name">CISA KEV</span><span class="src-status" style="color:var(--greenl)">LIVE</span></div>
+    <div class="src-row"><div class="src-indicator" style="background:var(--greenl)"></div><span class="src-name">ReliefWeb UN</span><span class="src-status" style="color:var(--greenl)">LIVE</span></div>
+    <div class="src-row"><div class="src-indicator" id="acled-dot" style="background:var(--wire2)"></div><span class="src-name">ACLED Conflict</span><span class="src-status" id="acled-status" style="color:var(--muted)">OPTIONAL</span></div>
+    <div class="src-row"><div class="src-indicator" id="news-dot" style="background:var(--wire2)"></div><span class="src-name">NewsAPI</span><span class="src-status" id="news-status" style="color:var(--muted)">OPTIONAL</span></div>
+  </div>
+
+</div>
+
+<!-- ── MAIN CONTENT ── -->
+<div id="main-content">
+
+  <!-- §1 BRIEF -->
+  <div class="sec-bar">
+    <div style="display:flex;flex-direction:column;gap:2px">
+      <span class="sec-eyebrow">01 · Morning Brief</span>
+      <span class="sec-title">Intelligence Assessment</span>
+    </div>
+    <span class="sec-badge badge-elevated" id="brief-level-badge">LOADING</span>
+    <span class="profile-label-badge" id="brief-profile-label">{{ profile.label | upper }}</span>
+    <button class="sec-refresh" id="brief-refresh-btn" onclick="refreshBrief()">↻ Refresh</button>
+  </div>
+
+  <div id="brief-section">
+    <div class="topics-bar" id="topics-bar">
+      {% for topic in profile.topics %}
+      <div class="topic-cell">
+        <span class="topic-name">{{ topic }}</span>
+        <span class="topic-status" id="topic-status-{{ loop.index0 }}">—</span>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="brief-doc-header">
+      <span class="brief-classification">UNCLASSIFIED // OSINT // SOUTH ASIA</span>
+      <div class="brief-doc-meta">
+        <span><strong id="brief-date">—</strong></span>
+        <span>ANALYST: ORION-AI</span>
+        <span>PROFILE: <strong style="color:{{ profile.color }}">{{ profile.label | upper }}</strong></span>
+      </div>
+    </div>
+
+    <div class="brief-body" id="brief-box">
+      <div class="brief-text loading" id="brief-text">Connecting to ORION intelligence engine — loading {{ profile.label }} assessment...</div>
+    </div>
+
+    <div class="brief-footer">
+      <span class="brief-ts" id="brief-timestamp">Generated: —</span>
+      <span class="brief-wl-pill" id="brief-wl-badge"></span>
+      <button class="brief-copy-btn" id="copy-btn" onclick="copyBrief()">⎘ Copy for client</button>
+      <span class="next-refresh-lbl" id="next-refresh-label">Auto-refresh: 06:00 IST daily</span>
+    </div>
+  </div>
+
+  <!-- §2 ALERTS -->
+  <div class="sec-bar" style="margin-top:0">
+    <div style="display:flex;flex-direction:column;gap:2px">
+      <span class="sec-eyebrow">02 · Live Alert Strip</span>
+      <span class="sec-title">Priority Events</span>
+    </div>
+    <span class="sec-badge badge-critical">TOP 5</span>
+    <button class="sec-refresh" id="alerts-refresh-btn" onclick="refreshAlerts()">↻ Refresh</button>
+  </div>
+
+  <div id="alerts-section">
+    <div class="alert-feed" id="alert-grid">
+      {% for i in range(5) %}
+      <div class="alert-skeleton" style="animation-delay:{{ i*0.12 }}s"></div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- §3 ASK -->
+  <div class="sec-bar" style="margin-top:0">
+    <div style="display:flex;flex-direction:column;gap:2px">
+      <span class="sec-eyebrow">03 · Intelligence Query</span>
+      <span class="sec-title">Ask Anything</span>
+    </div>
+    <span class="sec-badge" style="color:var(--cyanl);border-color:rgba(24,184,224,.3);background:rgba(8,120,168,.07)">AI ANALYST</span>
+  </div>
+
+  <div id="ask-section">
+    <div class="ask-terminal">
+      <div class="ask-input-row">
+        <div class="ask-prompt">▶</div>
+        <input type="text" id="ask-input"
+          placeholder="{{ profile.suggestions[0] if profile.suggestions else 'Ask about any threat, region, or chokepoint...' }}"
+          onkeypress="if(event.key==='Enter')askOrion()">
+        <button id="ask-btn" onclick="askOrion()">QUERY</button>
+      </div>
+      <div class="ask-chips" id="ask-chips">
+        {% for s in profile.suggestions[:4] %}
+        <span class="suggest-chip" onclick="setQuestion(this.textContent)">{{ s }}</span>
+        {% endfor %}
+      </div>
+      <div class="ask-output">
+        <div class="ask-placeholder" id="ask-placeholder">AWAITING INTELLIGENCE QUERY</div>
+        <div class="ask-loading" id="ask-loading">
+          <div class="ask-spinner"></div>
+          <span>QUERYING ORION ANALYST ENGINE</span>
+        </div>
+        <div class="ask-answer-text" id="ask-answer"></div>
+      </div>
+      <div class="ask-history" id="ask-history"></div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer id="page-footer">
+    <span class="footer-brand">ORION</span>
+    <span class="footer-txt">South Asia Intelligence Platform · Unclassified OSINT</span>
+    <div class="footer-sources">
+      <span class="fsrc live">USGS</span>
+      <span class="fsrc live">GDELT</span>
+      <span class="fsrc live">CISA</span>
+      <span class="fsrc live">ReliefWeb</span>
+      <span class="fsrc" id="footer-acled">ACLED</span>
+      <span class="fsrc" id="footer-news">NewsAPI</span>
+    </div>
+    <div class="footer-user">
+      <span>{{ user.name }} · {{ user.email }}</span>
+      <a href="/logout" class="footer-logout">Sign Out</a>
+    </div>
+  </footer>
+
+</div><!-- #main-content -->
+
+<!-- ── RIGHT SIDEBAR ── -->
+<div id="sidebar-right">
+
+  <div class="rs-block">
+    <div class="rs-head"><span class="rs-label">System Status</span></div>
+    <div class="sys-rows">
+      <div class="sys-row">
+        <div class="sys-dot" style="background:var(--greenl)"></div>
+        <span class="sys-key">API Engine</span>
+        <span class="sys-val" style="color:var(--greenl)">ONLINE</span>
+      </div>
+      <div class="sys-row">
+        <div class="sys-dot" id="smtp-dot" style="background:var(--wire2)"></div>
+        <span class="sys-key">Email Delivery</span>
+        <span class="sys-val" id="smtp-status" style="color:var(--muted)">—</span>
+      </div>
+      <div class="sys-row">
+        <div class="sys-dot" id="pay-dot" style="background:var(--wire2)"></div>
+        <span class="sys-key">Payments</span>
+        <span class="sys-val" id="pay-status" style="color:var(--muted)">—</span>
+      </div>
+      <div class="sys-row">
+        <div class="sys-dot" style="background:var(--bluel)"></div>
+        <span class="sys-key">Events loaded</span>
+        <span class="sys-val" style="color:var(--bluel)" id="event-count">—</span>
+      </div>
+      <div class="sys-row">
+        <div class="sys-dot" style="background:var(--wire2)"></div>
+        <span class="sys-key">Last fetch</span>
+        <span class="sys-val" style="color:var(--ghost);font-size:8px" id="last-fetch">—</span>
+      </div>
+      <div class="sys-row">
+        <div class="sys-dot" style="background:var(--wire2)"></div>
+        <span class="sys-key">Next refresh</span>
+        <span class="sys-val" style="color:var(--ghost);font-size:8px" id="rs-next-refresh">—</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="rs-block">
+    <div class="rs-head"><span class="rs-label">Threat Matrix</span></div>
+    <div class="threat-matrix">
+      <div class="tm-row">
+        <span class="tm-label">LoC Border</span>
+        <div class="tm-bar"><div class="tm-fill" style="width:72%;background:var(--redl)"></div></div>
+        <span class="tm-val" style="color:var(--redl)">72</span>
+      </div>
+      <div class="tm-row">
+        <span class="tm-label">Red Sea</span>
+        <div class="tm-bar"><div class="tm-fill" style="width:86%;background:var(--redl)"></div></div>
+        <span class="tm-val" style="color:var(--redl)">86</span>
+      </div>
+      <div class="tm-row">
+        <span class="tm-label">Hormuz</span>
+        <div class="tm-bar"><div class="tm-fill" style="width:61%;background:var(--amberl)"></div></div>
+        <span class="tm-val" style="color:var(--amberl)">61</span>
+      </div>
+      <div class="tm-row">
+        <span class="tm-label">Cyber</span>
+        <div class="tm-bar"><div class="tm-fill" style="width:78%;background:var(--purpl)"></div></div>
+        <span class="tm-val" style="color:var(--purpl)">78</span>
+      </div>
+      <div class="tm-row">
+        <span class="tm-label">LAC</span>
+        <div class="tm-bar"><div class="tm-fill" style="width:53%;background:var(--amberl)"></div></div>
+        <span class="tm-val" style="color:var(--amberl)">53</span>
+      </div>
+      <div class="tm-row">
+        <span class="tm-label">IOR</span>
+        <div class="tm-bar"><div class="tm-fill" style="width:47%;background:var(--bluel)"></div></div>
+        <span class="tm-val" style="color:var(--bluel)">47</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="rs-block">
+    <div class="rs-head">
+      <span class="rs-label">Alert Rules</span>
+      <span style="font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:600;color:var(--bluel);cursor:pointer"
+            onclick="openPanel('alerts')">+ Manage</span>
+    </div>
+    <div class="rules-mini" id="rules-mini">
+      <div style="padding:10px 16px;font-size:9px;color:var(--dim);font-family:'Barlow Condensed',sans-serif">Loading rules...</div>
+    </div>
+  </div>
+
+  <div class="rs-block">
+    <div class="rs-head"><span class="rs-label">Watchlist</span></div>
+    <div id="rs-watchlist" style="padding:10px 16px">
+      <div style="font-size:9px;color:var(--dim);font-family:'Barlow Condensed',sans-serif">
+        No watchlist set — add assets in Settings to personalise your brief.
+      </div>
+    </div>
+  </div>
+
+</div><!-- #sidebar-right -->
+
+</div><!-- #shell -->
+
+<!-- ════════════════════ SETTINGS PANEL ════════════════════ -->
+<div class="panel-overlay" id="settings-overlay" onclick="closePanel('settings')"></div>
+<div class="side-panel" id="settings-panel">
+  <div class="panel-head">
+    <span class="panel-title">Account Settings</span>
+    <button class="panel-close" onclick="closePanel('settings')">✕</button>
+  </div>
+  <div class="panel-body">
+    <div class="setting-group">
+      <label class="setting-label">Display Name</label>
+      <input class="setting-input" id="s-name" value="{{ user.name }}">
+    </div>
+    <div class="setting-group">
+      <label class="setting-label">Client Profile — determines brief content</label>
+      <div class="profile-list" id="profile-list">
+        {% for key, p in profiles.items() %}
+        <label class="profile-radio {% if key == profile_key %}selected{% endif %}"
+               data-key="{{ key }}" onclick="selectProfile(this,'{{ key }}')">
+          <input type="radio" name="s-profile" value="{{ key }}"
+                 {% if key == profile_key %}checked{% endif %}>
+          <span class="pr-icon">{{ p.icon }}</span>
+          <span class="pr-text">
+            <span class="pr-name">{{ p.label }}</span>
+            <span class="pr-desc">{{ p.topics[0] }} · {{ p.topics[1] }}</span>
+          </span>
+          <span class="pr-check">✓</span>
+        </label>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="setting-group">
+      <label class="setting-label">Email Digest</label>
+      <div class="toggle-row">
+        <span style="font-size:9px;color:var(--silver);font-family:'Barlow Condensed',sans-serif;font-weight:500">Send morning brief to my email at 06:00 IST</span>
+        <button class="toggle {% if user.email_digest %}on{% endif %}" id="digest-toggle"
+                onclick="toggleDigest(this)"></button>
+      </div>
+      <div style="font-size:8.5px;color:var(--dim);margin-top:6px;font-family:'Barlow Condensed',sans-serif">
+        Delivers to: <span style="color:var(--steel)">{{ user.email }}</span>
+      </div>
+    </div>
+    <div class="setting-group">
+      <label class="setting-label">Custom Watchlist — your brief mentions these by name</label>
+      <textarea class="setting-input" id="s-watchlist" rows="6"
+        placeholder="One item per line or comma-separated, e.g.&#10;MV Sagarmala&#10;Gwadar port&#10;INS Vikrant&#10;Adani Wilmar cargo&#10;CVE-2024-1234"
+        style="resize:vertical;font-size:9px;line-height:1.7">{{ (user.watchlist or '')|replace('\n', '&#10;') }}</textarea>
+      <div style="font-size:8px;color:var(--dim);margin-top:5px;line-height:1.6;font-family:'Barlow Condensed',sans-serif">
+        Max 20 items · Mentioned by name in your morning brief · Works for vessel names, routes, CVE IDs, companies
+      </div>
+      <div id="wl-tag-strip" style="display:none;flex-wrap:wrap;gap:4px;margin-top:10px;padding-top:10px;border-top:1px solid var(--wire2)">
+        <span style="font-size:8px;letter-spacing:1px;color:var(--muted);width:100%;margin-bottom:2px;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase">Active Watchlist</span>
+      </div>
+      <div id="wl-live-preview" style="display:none;flex-wrap:wrap;gap:4px;margin-top:6px"></div>
+    </div>
+    <button class="btn-save" onclick="saveSettings()">Save Settings</button>
+    <div class="save-status" id="save-status"></div>
+  </div>
+</div>
+
+<!-- ════════════════════ ALERT RULES PANEL ════════════════════ -->
+<div class="panel-overlay" id="alerts-overlay" onclick="closePanel('alerts')"></div>
+<div class="side-panel" id="alerts-panel">
+  <div class="panel-head">
+    <span class="panel-title">Custom Alert Rules</span>
+    <button class="panel-close" onclick="closePanel('alerts')">✕</button>
+  </div>
+  <div class="panel-body">
+    <div style="margin-bottom:14px">
+      <div class="add-rule-title">Quick Presets</div>
+      <div class="preset-chips">
+        <span class="preset-chip" onclick="fillPreset('Pakistan LoC Spike','place','contains','Pakistan')">🇵🇰 Pakistan LoC</span>
+        <span class="preset-chip" onclick="fillPreset('China LAC Alert','place','contains','China LAC')">🇨🇳 China LAC</span>
+        <span class="preset-chip" onclick="fillPreset('Red Sea Critical','place','contains','Red Sea')">🚢 Red Sea</span>
+        <span class="preset-chip" onclick="fillPreset('Hormuz Risk','place','contains','Hormuz')">⛽ Hormuz</span>
+        <span class="preset-chip" onclick="fillPreset('High Score Event','score','gte','75')">🔴 Score ≥75</span>
+        <span class="preset-chip" onclick="fillPreset('Ransomware Alert','title','contains','ransomware')">💻 Ransomware</span>
+        <span class="preset-chip" onclick="fillPreset('CISA Critical','source','contains','CISA')">🛡 CISA Alert</span>
+        <span class="preset-chip" onclick="fillPreset('IOR Naval','place','contains','Indian Ocean')">⚓ IOR Naval</span>
+      </div>
+    </div>
+    <div class="add-rule-title">Active Rules</div>
+    <div class="rules-list" id="rules-list">
+      <div style="font-size:9px;color:var(--dim);padding:12px 0;font-family:'Barlow Condensed',sans-serif">Loading rules...</div>
+    </div>
+    <div class="add-rule-form">
+      <span class="add-rule-title">Add New Rule</span>
+      <div class="rule-field">
+        <label>Rule Name</label>
+        <input id="r-name" placeholder="e.g. Pakistan border spike">
+      </div>
+      <div class="rule-grid">
+        <div class="rule-field">
+          <label>Field</label>
+          <select id="r-field">
+            <option value="place">Place</option>
+            <option value="title">Title</option>
+            <option value="score">Score</option>
+            <option value="type">Type</option>
+            <option value="source">Source</option>
+          </select>
+        </div>
+        <div class="rule-field">
+          <label>Operator</label>
+          <select id="r-op">
+            <option value="contains">contains</option>
+            <option value="not_contains">not contains</option>
+            <option value="gte">≥ (score)</option>
+            <option value="lte">≤ (score)</option>
+            <option value="equals">equals</option>
+          </select>
+        </div>
+      </div>
+      <div class="rule-field">
+        <label>Value</label>
+        <input id="r-value" placeholder="e.g. Red Sea, 75, ransomware">
+      </div>
+      <button class="btn-add-rule" onclick="createRule()">+ Add Rule</button>
+      <div class="rule-status-msg" id="rule-status"></div>
+    </div>
+    <div class="log-section">
+      <div class="log-title">Recent Alert Fires</div>
+      <div id="alert-log"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════ JAVASCRIPT ════════════════════ -->
+<script>
+const PROFILE_KEY = '{{ profile_key }}';
+let briefText    = '';
+let askHistory   = [];
+let selectedProfile = '{{ profile_key }}';
+let digestOn     = {{ 'true' if user.email_digest else 'false' }};
+
+/* ── THREAT COLOR MAP ── */
+const THREAT_COLORS = {
+  CRITICAL: 'var(--redl)',
+  HIGH:     'var(--amberl)',
+  ELEVATED: 'var(--bluel)',
+  NOMINAL:  'var(--greenl)',
+};
+function setThreatColor(level){
+  const c = THREAT_COLORS[level] || 'var(--amberl)';
+  document.documentElement.style.setProperty('--threat-color', c);
+}
+
+/* ── CLOCK ── */
+function updateClock(){
+  const now = new Date();
+  const ist = new Intl.DateTimeFormat('en-IN',{hour:'2-digit',minute:'2-digit',second:'2-digit',timeZone:'Asia/Kolkata',hour12:false}).format(now);
+  const utc = now.toUTCString().slice(17,25);
+  document.getElementById('tb-ist').textContent = ist + ' IST';
+  document.getElementById('tb-utc').textContent = utc + ' UTC';
+}
+setInterval(updateClock, 1000); updateClock();
+
+/* ── HELPERS ── */
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const sevColor = s => s>=75?'var(--redl)':s>=55?'var(--amberl)':s>=35?'var(--bluel)':'var(--greenl)';
+const sevStripe = s => s>=75?'var(--redl)':s>=55?'var(--amberl)':s>=35?'var(--bluel)':'var(--greenl)';
+const timeAgo = ts => {
+  const d = Date.now() - ts;
+  if(d < 3600000) return Math.floor(d/60000)+'m ago';
+  if(d < 86400000) return Math.floor(d/3600000)+'h ago';
+  return Math.floor(d/86400000)+'d ago';
+};
+function setBadge(id, text, cls){
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.textContent = text;
+  el.className = 'sec-badge ' + cls;
+}
+
+/* ── TYPEWRITER ── */
+let typeTimer = null;
+function typeText(el, text, speed=12){
+  if(typeTimer) clearInterval(typeTimer);
+  el.textContent=''; el.classList.remove('typing-cursor');
+  let i=0;
+  el.classList.add('typing-cursor');
+  typeTimer = setInterval(()=>{
+    if(i >= text.length){ clearInterval(typeTimer); el.classList.remove('typing-cursor'); return; }
+    el.textContent += text[i++];
+  }, speed);
+}
+
+/* ── STATUS ── */
+async function loadStatus(){
+  try{
+    const d = await fetch('/api/status').then(r=>r.json());
+    const score = d.threat_score || 0;
+    const level = d.brief_level || 'NOMINAL';
+    const c     = sevColor(score);
+    const el    = document.getElementById('tb-threat-val');
+    const lvl   = document.getElementById('tb-threat-lvl');
+    if(el){ el.textContent = score; el.style.color = c; }
+    if(lvl){ lvl.textContent = level; lvl.style.color = c; }
+    setThreatColor(level);
+    const nr = document.getElementById('rs-next-refresh');
+    if(nr) nr.textContent = d.next_refresh || '—';
+    const lf = document.getElementById('last-fetch');
+    if(lf) lf.textContent = d.last_fetch || '—';
+    const ec = document.getElementById('event-count');
+    if(ec){ ec.textContent = (d.event_count || 0) + ' events'; }
+
+    /* System status indicators */
+    if(d.smtp_ready){
+      const dot=document.getElementById('smtp-dot'), st=document.getElementById('smtp-status');
+      if(dot) dot.style.background='var(--greenl)';
+      if(st){ st.textContent='CONFIGURED'; st.style.color='var(--greenl)'; }
+    }
+    if(d.razorpay_ready){
+      const dot=document.getElementById('pay-dot'), st=document.getElementById('pay-status');
+      if(dot) dot.style.background='var(--greenl)';
+      if(st){ st.textContent='LIVE'; st.style.color='var(--greenl)'; }
+    }
+  }catch(e){}
+}
+
+/* ── BRIEF ── */
+async function loadBrief(refresh=false){
+  const el  = document.getElementById('brief-text');
+  const btn = document.getElementById('brief-refresh-btn');
+  if(!el) return;
+  btn.disabled=true; btn.textContent='Loading...';
+  el.className='brief-text loading';
+  el.textContent='Querying ORION intelligence engine...';
+  try{
+    const pk  = selectedProfile;
+    const url = `/api/brief?profile=${pk}${refresh?'&refresh=1':''}`;
+    const d   = await fetch(url).then(r=>r.json());
+    briefText = d.brief || '';
+    const level = d.brief_level || 'ELEVATED';
+    const cls   = {CRITICAL:'badge-critical',HIGH:'badge-high',ELEVATED:'badge-elevated',NOMINAL:'badge-nominal'};
+    setBadge('brief-level-badge', level, cls[level]||'badge-elevated');
+    const pll = document.getElementById('brief-profile-label');
+    if(pll) pll.textContent = (d.profile_label||'').toUpperCase();
+    const ts = document.getElementById('brief-timestamp');
+    if(ts) ts.textContent = 'Generated: ' + (d.brief_time || '—');
+    const bd = document.getElementById('brief-date');
+    if(bd) bd.textContent = new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric',timeZone:'Asia/Kolkata'});
+    /* Watchlist badge */
+    const wlb = document.getElementById('brief-wl-badge');
+    if(wlb){
+      if(d.watchlist_active && d.watchlist_count){
+        wlb.textContent = '◈ WATCHLIST ×' + d.watchlist_count + ' ACTIVE';
+        wlb.style.display = 'inline-block';
+      } else {
+        wlb.style.display = 'none';
+      }
+    }
+    /* Topic statuses */
+    const topics = ['CRITICAL','HIGH','ELEVATED','NOMINAL','NOMINAL'];
+    document.querySelectorAll('[id^="topic-status-"]').forEach((el2, i)=>{
+      el2.textContent = topics[i] || 'NOMINAL';
+      el2.style.color = sevColor(level==='CRITICAL'?80:level==='HIGH'?60:level==='ELEVATED'?40:20);
+    });
+    el.className = 'brief-text';
+    const spd = Math.max(8, Math.min(16, 4000/(briefText.length||1)));
+    typeText(el, briefText, spd);
+    setThreatColor(level);
+    const nr = document.getElementById('next-refresh-label');
+    if(nr) nr.textContent = d.next_refresh || 'Auto-refresh: 06:00 IST daily';
+  }catch(e){
+    el.className='brief-text loading';
+    el.textContent='Could not reach ORION — ensure app.py is running.';
+  }
+  btn.disabled=false; btn.textContent='↻ Refresh';
+}
+function refreshBrief(){ loadBrief(true); }
+function copyBrief(){
+  const btn = document.getElementById('copy-btn');
+  if(!briefText){ return; }
+  navigator.clipboard.writeText(briefText).then(()=>{
+    btn.classList.add('copied'); btn.textContent='✓ Copied';
+    setTimeout(()=>{ btn.classList.remove('copied'); btn.textContent='⎘ Copy for client'; }, 2000);
+  });
+}
+
+/* ── ALERTS ── */
+async function loadAlerts(refresh=false){
+  const grid = document.getElementById('alert-grid');
+  const btn  = document.getElementById('alerts-refresh-btn');
+  if(!grid) return;
+  btn.disabled=true;
+  if(refresh) grid.innerHTML = Array(5).fill('<div class="alert-skeleton"></div>').join('');
+  try{
+    const url = `/api/alerts${refresh?'?refresh=1':''}`;
+    const d   = await fetch(url).then(r=>r.json());
+    const events = d.events || [];
+    if(!events.length){ grid.innerHTML='<div style="padding:20px 24px;font-size:9px;color:var(--muted);font-family:\'Barlow Condensed\',sans-serif;letter-spacing:1.5px">NO EVENTS IN CURRENT CYCLE</div>'; return; }
+    grid.innerHTML = events.map((ev, i)=>{
+      const sc   = ev.score || 0;
+      const col  = sevColor(sc);
+      const conf = ev.confidence || '?';
+      const confColor = conf==='HIGH'?'var(--greenl)':conf==='MED'?'var(--amberl)':'var(--muted)';
+      const transBadge = ev.translated ? `<span class="translated-tag">TRANSLATED</span>` : '';
+      return `<div class="alert-card" style="animation-delay:${i*0.07}s">
+        <div class="alert-sev-stripe" style="background:${col};opacity:.85"></div>
+        <div class="alert-rank-col">
+          <div class="alert-num">${String(i+1).padStart(2,'0')}</div>
+          <div class="alert-conf" style="color:${confColor}">${conf}</div>
+        </div>
+        <div class="alert-body">
+          <div class="alert-event">${esc(ev.title||'Unknown event')} ${transBadge}</div>
+          <div class="alert-where">${esc(ev.place||'Unknown')}</div>
+          ${ev.india_impact?`<div class="alert-india">${esc(ev.india_impact)}</div>`:''}
+        </div>
+        <div class="alert-meta-col">
+          <div class="alert-src">${esc((ev.source||'?').split('/')[0].toUpperCase())}</div>
+          <div class="alert-score" style="color:${col}">${sc}</div>
+          <div class="alert-time-ago">${ev.time?timeAgo(ev.time):''}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }catch(e){
+    grid.innerHTML='<div style="padding:20px 24px;font-size:9px;color:var(--muted);font-family:\'Barlow Condensed\',sans-serif">Connection error</div>';
+  }
+  btn.disabled=false; btn.textContent='↻ Refresh';
+}
+function refreshAlerts(){ loadAlerts(true); }
+
+/* ── ASK ── */
+function setQuestion(q){
+  document.getElementById('ask-input').value = q;
+  document.getElementById('ask-input').focus();
+}
+async function askOrion(){
+  const inp = document.getElementById('ask-input');
+  const q   = (inp.value||'').trim();
+  if(!q) return;
+  const ansEl  = document.getElementById('ask-answer');
+  const phEl   = document.getElementById('ask-placeholder');
+  const ldgEl  = document.getElementById('ask-loading');
+  const histEl = document.getElementById('ask-history');
+  const btn    = document.getElementById('ask-btn');
+  btn.disabled=true; btn.textContent='...';
+  phEl.style.display='none';
+  ldgEl.classList.add('show');
+  ansEl.className='ask-answer-text';
+  try{
+    const d = await fetch('/api/ask',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:q})}).then(r=>r.json());
+    ldgEl.classList.remove('show');
+    ansEl.className='ask-answer-text show';
+    typeText(ansEl, d.answer||'No response.', 12);
+    askHistory.unshift({q, a: d.answer||''});
+    if(askHistory.length > 8) askHistory.pop();
+    if(askHistory.length > 1){
+      histEl.style.display='block';
+      histEl.innerHTML = askHistory.slice(1).map(item=>`
+        <div class="history-item">
+          <div class="history-q">${esc(item.q)}</div>
+          <div class="history-a">${esc(item.a)}</div>
+        </div>`).join('');
+    }
+    inp.value='';
+  }catch(e){
+    ldgEl.classList.remove('show');
+    ansEl.className='ask-answer-text show';
+    ansEl.textContent='Query failed — check connection.';
+  }
+  btn.disabled=false; btn.textContent='QUERY';
+}
+document.getElementById('ask-input').addEventListener('keypress', e=>{ if(e.key==='Enter') askOrion(); });
+
+/* ── PROFILE SWITCH ── */
+function switchProfile(key){
+  selectedProfile = key;
+  document.querySelectorAll('.p-tab').forEach(t=>t.classList.toggle('active', t.dataset.profile===key));
+  document.querySelectorAll('.domain-row').forEach((r,i)=>{
+    const domainKeys = {{ profiles.keys() | list | tojson }};
+    const dot = r.querySelector('.domain-dot');
+    if(dot){
+      if(domainKeys[i]===key){ dot.classList.add('live-dot'); }
+      else { dot.classList.remove('live-dot'); }
+    }
+  });
+  loadBrief(false);
+}
+
+/* ── PANELS ── */
+function openPanel(name){
+  document.getElementById(name+'-overlay').classList.add('open');
+  document.getElementById(name+'-panel').classList.add('open');
+  if(name==='alerts'){ loadRules(); loadAlertLog(); }
+}
+function closePanel(name){
+  document.getElementById(name+'-overlay').classList.remove('open');
+  document.getElementById(name+'-panel').classList.remove('open');
+}
+
+/* ── SETTINGS ── */
+function selectProfile(el, key){
+  selectedProfile = key;
+  document.querySelectorAll('.profile-radio').forEach(r=>r.classList.toggle('selected', r.dataset.key===key));
+}
+function toggleDigest(btn){ digestOn=!digestOn; btn.classList.toggle('on', digestOn); }
+
+async function saveSettings(){
+  const name     = document.getElementById('s-name').value.trim();
+  if(!name){ document.getElementById('save-status').textContent='Name required'; return; }
+  const watchlist = (document.getElementById('s-watchlist')||{value:''}).value.trim();
+  const st = document.getElementById('save-status');
+  st.textContent='Saving...'; st.style.color='var(--muted)';
+  try{
+    const d = await fetch('/api/settings',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({name,profile:selectedProfile,email_digest:digestOn,digest_time:'06:00',watchlist})
+    }).then(r=>r.json());
+    if(d.ok){
+      if(d.watchlist_saved && d.watchlist_saved.length){
+        renderWatchlistTags(d.watchlist_saved, 'wl-tag-strip');
+        updateRsWatchlist(d.watchlist_saved);
+        st.textContent=`✓ Settings saved · ${d.watchlist_count} watchlist item${d.watchlist_count===1?'':'s'} active`;
+      } else {
+        const strip=document.getElementById('wl-tag-strip');
+        if(strip) strip.style.display='none';
+        updateRsWatchlist([]);
+        st.textContent='✓ Settings saved';
+      }
+      st.style.color='var(--greenl)';
+      setTimeout(()=>{ if(selectedProfile!==PROFILE_KEY) window.location.reload(); },900);
+    } else {
+      st.textContent='Error: '+d.error; st.style.color='var(--redl)';
+    }
+  }catch(e){ st.textContent='Save failed'; st.style.color='var(--redl)'; }
+}
+
+/* Watchlist tag helpers */
+function renderWatchlistTags(items, containerId){
+  const el=document.getElementById(containerId); if(!el) return;
+  el.style.display='flex';
+  Array.from(el.children).forEach(c=>{ if(!c.classList.contains('wl-header-label')) c.remove(); });
+  if(!el.querySelector('.wl-header-label')){
+    const h=document.createElement('span'); h.className='wl-header-label';
+    h.style.cssText='font-size:8px;letter-spacing:1px;color:var(--muted);width:100%;margin-bottom:2px;font-family:\'Barlow Condensed\',sans-serif;font-weight:700;text-transform:uppercase';
+    h.textContent='Active Watchlist'; el.prepend(h);
+  }
+  items.forEach(item=>{
+    const pill=document.createElement('span');
+    pill.style.cssText='font-size:8px;padding:2px 9px;border:1px solid var(--wire2);color:var(--steel);background:var(--ink1);font-family:\'JetBrains Mono\',monospace';
+    pill.textContent=item; el.appendChild(pill);
+  });
+}
+function updateRsWatchlist(items){
+  const el=document.getElementById('rs-watchlist'); if(!el) return;
+  if(!items.length){
+    el.innerHTML='<div style="font-size:9px;color:var(--dim);font-family:\'Barlow Condensed\',sans-serif">No watchlist set — add assets in Settings.</div>';
+    return;
+  }
+  el.innerHTML=items.map(w=>`<span style="display:inline-block;font-size:9px;padding:2px 9px;border:1px solid var(--wire2);color:var(--steel);background:var(--ink2);margin:2px;font-family:\'Barlow Condensed\',sans-serif;font-weight:500">${esc(w)}</span>`).join('');
+}
+function watchlistPreview(){
+  const raw=(document.getElementById('s-watchlist')||{value:''}).value;
+  const items=raw.replace(/,/g,'\n').split('\n').map(s=>s.trim()).filter(Boolean).slice(0,20);
+  const preview=document.getElementById('wl-live-preview'); if(!preview) return;
+  if(!items.length){ preview.style.display='none'; preview.innerHTML=''; return; }
+  preview.style.display='flex';
+  preview.innerHTML=items.map(w=>`<span style="font-size:8px;padding:2px 8px;border:1px dashed var(--wire2);color:var(--dim);font-family:'JetBrains Mono',monospace">${esc(w)}</span>`).join('');
+}
+function debounce(fn, delay){ let t; return function(...a){ clearTimeout(t); t=setTimeout(()=>fn(...a),delay); }; }
+document.addEventListener('DOMContentLoaded',()=>{
+  const ta=document.getElementById('s-watchlist');
+  if(ta){
+    ta.addEventListener('input',debounce(watchlistPreview,300));
+    const existing=ta.value.trim();
+    if(existing){
+      const items=existing.replace(/,/g,'\n').split('\n').map(s=>s.trim()).filter(Boolean).slice(0,20);
+      if(items.length){ renderWatchlistTags(items,'wl-tag-strip'); updateRsWatchlist(items); }
+    }
+  }
+});
+
+/* ── ALERT RULES ── */
+async function loadRules(){
+  try{
+    const d=await fetch('/api/rules').then(r=>r.json());
+    renderRules(d.rules||[]);
+    renderRulesMini(d.rules||[]);
+  }catch(e){}
+}
+function renderRules(rules){
+  const el=document.getElementById('rules-list'); if(!el) return;
+  if(!rules.length){ el.innerHTML='<div style="font-size:9px;color:var(--dim);padding:10px 0;font-family:\'Barlow Condensed\',sans-serif">No rules — add one below</div>'; return; }
+  el.innerHTML=rules.map(r=>`
+    <div class="rule-card ${r.active?'':'inactive'}">
+      <div class="rule-info">
+        <div class="rule-name">${esc(r.name)}</div>
+        <div class="rule-condition">if <span>${esc(r.field)}</span> ${esc(r.operator)} <span>${esc(r.value)}</span></div>
+        <div class="rule-meta">Fires: ${r.trigger_count||0}× ${r.last_triggered?'· Last: '+r.last_triggered.slice(0,10):''}</div>
+      </div>
+      <div class="rule-actions">
+        <button class="rule-btn" onclick="toggleRule(${r.id})" title="${r.active?'Disable':'Enable'}">${r.active?'◉':'◎'}</button>
+        <button class="rule-btn del" onclick="deleteRule(${r.id})" title="Delete">✕</button>
+      </div>
+    </div>`).join('');
+}
+function renderRulesMini(rules){
+  const el=document.getElementById('rules-mini'); if(!el) return;
+  if(!rules.length){ el.innerHTML='<div style="padding:10px 16px;font-size:9px;color:var(--dim);font-family:\'Barlow Condensed\',sans-serif">No rules configured</div>'; return; }
+  el.innerHTML=rules.map(r=>`
+    <div class="rule-mini-row">
+      <div class="rule-mini-dot" style="background:${r.active?'var(--greenl)':'var(--wire2)'}"></div>
+      <span class="rule-mini-name">${esc(r.name)}</span>
+      <span class="rule-mini-count">${r.trigger_count||0}×</span>
+    </div>`).join('');
+}
+async function toggleRule(id){ await fetch(`/api/rules/${id}/toggle`,{method:'POST'}); loadRules(); }
+async function deleteRule(id){
+  if(!confirm('Delete this alert rule?')) return;
+  await fetch(`/api/rules/${id}`,{method:'DELETE'}); loadRules();
+}
+function fillPreset(name, field, op, value){
+  document.getElementById('r-name').value=name;
+  document.getElementById('r-field').value=field;
+  document.getElementById('r-op').value=op;
+  document.getElementById('r-value').value=value;
+}
+async function createRule(){
+  const name=(document.getElementById('r-name').value||'').trim();
+  const field=document.getElementById('r-field').value;
+  const op=document.getElementById('r-op').value;
+  const value=(document.getElementById('r-value').value||'').trim();
+  const st=document.getElementById('rule-status');
+  if(!name||!value){ st.textContent='Name and value required'; st.style.color='var(--redl)'; return; }
+  try{
+    const d=await fetch('/api/rules',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,field,operator:op,value})}).then(r=>r.json());
+    if(d.ok){
+      st.textContent='✓ '+d.message; st.style.color='var(--greenl)';
+      document.getElementById('r-name').value=''; document.getElementById('r-value').value='';
+      loadRules();
+      document.getElementById('alerts-icon-btn').classList.add('active');
+    } else { st.textContent='Error: '+d.error; st.style.color='var(--redl)'; }
+  }catch(e){ st.textContent='Failed'; st.style.color='var(--redl)'; }
+  setTimeout(()=>{ st.textContent=''; },3000);
+}
+async function loadAlertLog(){
+  try{
+    const d=await fetch('/api/alert-log').then(r=>r.json());
+    const container=document.getElementById('alert-log');
+    const logs=d.logs||[];
+    if(!logs.length){ container.innerHTML='<div style="font-size:9px;color:var(--dim);font-family:\'Barlow Condensed\',sans-serif">No alerts triggered yet</div>'; return; }
+    container.innerHTML=logs.map(l=>`
+      <div class="log-item">
+        <div class="log-rule">RULE: ${esc(l.rule_name)}</div>
+        <div class="log-event">${esc(l.event_title)}</div>
+        <div class="log-meta">
+          <span>◈ ${esc(l.event_place||'Unknown')}</span>
+          <span>${l.triggered_at?l.triggered_at.slice(0,16).replace('T',' '):''}</span>
+          ${l.email_sent?'<span class="log-email-sent">✓ Email sent</span>':''}
+        </div>
+      </div>`).join('');
+    if(logs.length) document.getElementById('alerts-icon-btn').classList.add('active');
+  }catch(e){}
+}
+
+/* ── INIT ── */
+async function init(){
+  await loadStatus();
+  await Promise.all([loadBrief(false), loadAlerts(false)]);
+  loadRules();
+}
+init();
+</script>
+</body>
+</html>
