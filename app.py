@@ -48,7 +48,9 @@ NEW in v5:
   DATA-03  Both fetchers gated behind env vars; fallback gracefully if keys absent
   DATA-04  load_all_data() now pulls from 6 sources: USGS, GDELT, CISA, ReliefWeb, ACLED, NewsAPI
 """
-
+@app.route("/health")
+def health():
+    return "OK", 200
 import os, json, time, atexit, random, threading, smtplib, hashlib, secrets, hmac
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
@@ -2143,6 +2145,9 @@ def _startup():
 
 _startup()
 
+
+
 if __name__ == "__main__":
     print(f"\n→  {BASE_URL}\n")
-    app.run(host="0.0.0.0", port=PORT, debug=False, use_reloader=False)
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port, debug=False, use_reloader=False)
