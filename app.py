@@ -48,9 +48,7 @@ NEW in v5:
   DATA-03  Both fetchers gated behind env vars; fallback gracefully if keys absent
   DATA-04  load_all_data() now pulls from 6 sources: USGS, GDELT, CISA, ReliefWeb, ACLED, NewsAPI
 """
-@app.route("/health")
-def health():
-    return "OK", 200
+
 import os, json, time, atexit, random, threading, smtplib, hashlib, secrets, hmac
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
@@ -64,7 +62,10 @@ from flask import (Flask, render_template, jsonify, request,
 from anthropic import Anthropic
 from apscheduler.schedulers.background import BackgroundScheduler
 from functools import wraps
-
+app = Flask(__name__)
+@app.route("/health")
+def health():
+    return "OK", 200
 try:
     from dotenv import load_dotenv; load_dotenv()
 except ImportError:
