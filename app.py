@@ -2144,7 +2144,7 @@ def _startup():
         finally: lock.unlink(missing_ok=True)
     threading.Thread(target=_bg, daemon=True).start()
 
-_startup()
+#_startup()
 
 
 
